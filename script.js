@@ -30,11 +30,11 @@ const note = "C4"; // the note played when the pointer goes down
 const columns = 4;
 const rows = 3;
 
-const screenWidth = window.innerWidth;
-const screenHeight = window.innerHeight;
+const normalSaturation = 100;
+const normalLightness = 50;
 
-const cellWidth = innerWidth / columns;
-const cellHeight = innerHeight / rows;
+const hoverSaturation = 30;
+const hoverLightness = 35;
 
 const notes = [
   "C4",
@@ -56,8 +56,15 @@ const notes = [
 // For example: where the pointer is, how fast it's moving, or whether a drone is on.
 let activeRow = -1;
 let activeColumn = -1;
-let shapes = [];
+let activeCell = -1;
 
+let shapes = [];
+let cellHue = [];
+let cellSaturation = [];
+let cellLightness = [];
+
+let targetSaturation = [];
+let targetLightness = [];
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
 const synth = new Tone.PolySynth(Tone.Synth).toDestination(); // can play several notes at once
@@ -68,6 +75,24 @@ function playCellSound(index) {
   const note = notes[index];
 
   synth.triggerAttackRelease(note, "8n");
+}
+
+// ---------- Visuals ----------
+function cellVisuals(index) {
+  if (activeCell !== -1) {
+    //after going from one cell to another, reset the shapes colour
+    let previousShape = shapes[activeCell];
+    let previousHue = cellHue[activeCell];
+
+    previousShape.setColour(previousHue, normalSaturation, normalLightness);
+  }
+  //update the current cell in which the pointer is located
+  activeCell = index;
+  //change this cells colour for visual feedback
+  let currentShape = shapes[activeCell];
+  let currentHue = cellHue[activeCell];
+
+  currentShape.setColour(currentHue, hoverSaturation, hoverLightness);
 }
 
 // ---------- Update ----------
@@ -108,28 +133,44 @@ function pointerMove(event) {
     activeColumn = column;
 
     let index = row * columns + column;
+    //I use this index for the following functions, since it says in which cell I'm located
     playCellSound(index);
-
+    cellVisuals(index);
     console.log("Row: " + row + " Column: " + column);
   }
 }
 
 function buildGrid() {
   //creates a grid of cells, depending on the number of columns and rows defined in the Settings section
+  let cellWidth = window.innerWidth / columns;
+  let cellHeight = window.innerHeight / rows;
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
       //x and y coordinates for the columns and rows section they are in
       let x = column / columns;
       let y = row / rows;
 
+      //defining the rectangles
       const shape = createShape();
       shape.setPosition(x, y);
       shape.setSize(cellWidth, cellHeight);
       shape.setRoundedness(0);
-      shape.setColour(200 + column * 20 + row * 20, 100, 50);
+      shape.setColour(
+        200 + column * 10 + row * 40,
+        normalSaturation,
+        normalLightness,
+      );
 
       //saves the current rectangle shape in an array, so we can easily edit certain shapes later on
       shapes.push(shape);
+      //saves the colour (hues) of each created cell
+      cellHue.push(200 + column * 10 + row * 40);
+      //saves the original saturation and lightness of each created cell
+      cellSaturation.push(normalSaturation);
+      cellLightness.push(normalLightness);
+      //this is important for the colour transition for the visual feedback
+      targetSaturation.push(normalSaturation);
+      targetLightness.push(normalLightness);
     }
   }
 }
@@ -168,6 +209,23 @@ function resizeGrid() {
   }
 }
 
+function resetActiveCell() {
+  //if no cell has been touched yet, do nothing
+  if (activeCell === -1) {
+    return;
+  }
+  //else reset the colour of the last touched shape
+  let shape = shapes[activeCell];
+  let hue = cellHue[activeCell];
+
+  shape.setColour(hue, normalSaturation, normalLightness);
+
+  //reset all values
+  activeCell = -1;
+  activeRow = -1;
+  activeColumn = -1;
+}
+
 // ---------- Setup ----------
 // Setup is run once, at the start of the program. It sets everything up for us!
 function setup() {
@@ -182,6 +240,7 @@ function setup() {
   window.addEventListener("pointerdown", pointerDown);
   window.addEventListener("resize", resizeGrid);
   window.addEventListener("pointermove", pointerMove);
+  document.addEventListener("pointerout", resetActiveCell); //didn't work with window.addEventListener, so I used document.addEventListener | maybe it was the Opera Gx browser that had problems with it.
 }
 
 setup(); // Always remember to call setup()!
