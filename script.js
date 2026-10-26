@@ -36,6 +36,21 @@ const screenHeight = window.innerHeight;
 const cellWidth = innerWidth / columns;
 const cellHeight = innerHeight / rows;
 
+const notes = [
+  "C4",
+  "D4",
+  "E4",
+  "G4",
+  "A4",
+  "C4",
+  "D4",
+  "E5",
+  "G5",
+  "A4",
+  "A5",
+  "C5",
+];
+
 // ---------- State ----------
 // State variables are the parts of your program that change over time.
 // For example: where the pointer is, how fast it's moving, or whether a drone is on.
@@ -46,6 +61,14 @@ let shapes = [];
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
 const synth = new Tone.PolySynth(Tone.Synth).toDestination(); // can play several notes at once
+
+//plays the sounds in the cells (used in the pointerMove() function)
+function playCellSound(index) {
+  //index is equal to the indeces used in shapes[]
+  const note = notes[index];
+
+  synth.triggerAttackRelease(note, "8n");
+}
 
 // ---------- Update ----------
 // Update the state. This is called every 100ms.
@@ -68,19 +91,44 @@ function pointerDown(event) {
   synth.triggerAttackRelease(note, "8n"); // play the note for an eighth note
 }
 
+function pointerMove(event) {
+  //get position of the users pointer
+  let pointerX = event.clientX;
+  let pointerY = event.clientY;
+
+  const cellWidth = window.innerWidth / columns;
+  let column = Math.floor(pointerX / cellWidth); //break position down to which COLUMN it's positioned, rather than the exact pixel coordinate
+
+  const cellHeight = window.innerHeight / rows;
+  let row = Math.floor(pointerY / cellHeight); //break position down to which ROW it's, rather than the exact pixel coordinate
+
+  //this if statement prevents that it repeats an input from the pointer if it stays in the same cell
+  if (row !== activeRow || column !== activeColumn) {
+    activeRow = row;
+    activeColumn = column;
+
+    let index = row * columns + column;
+    playCellSound(index);
+
+    console.log("Row: " + row + " Column: " + column);
+  }
+}
+
 function buildGrid() {
+  //creates a grid of cells, depending on the number of columns and rows defined in the Settings section
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
-      const shape = createShape();
-
+      //x and y coordinates for the columns and rows section they are in
       let x = column / columns;
       let y = row / rows;
 
+      const shape = createShape();
       shape.setPosition(x, y);
       shape.setSize(cellWidth, cellHeight);
       shape.setRoundedness(0);
       shape.setColour(200 + column * 20 + row * 20, 100, 50);
 
+      //saves the current rectangle shape in an array, so we can easily edit certain shapes later on
       shapes.push(shape);
     }
   }
@@ -113,6 +161,7 @@ function resizeGrid() {
       let cellWidth = window.innerWidth / columns;
       let cellHeight = window.innerHeight / rows;
 
+      //implementing change
       shape.setPosition(x, y);
       shape.setSize(cellWidth, cellHeight);
     }
@@ -132,6 +181,7 @@ function setup() {
   // Put your event listener code here
   window.addEventListener("pointerdown", pointerDown);
   window.addEventListener("resize", resizeGrid);
+  window.addEventListener("pointermove", pointerMove);
 }
 
 setup(); // Always remember to call setup()!
