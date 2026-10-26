@@ -53,6 +53,7 @@ const notes = [
 // ---------- State ----------
 // State variables are the parts of your program that change over time.
 // For example: where the pointer is, how fast it's moving, or whether a drone is on.
+
 let activeRow = -1;
 let activeColumn = -1;
 let activeCell = -1;
@@ -64,9 +65,23 @@ let cellLightness = [];
 
 let targetSaturation = [];
 let targetLightness = [];
+
+let pointerX = 0;
+let pointerY = 0;
+let previousPointerX = 0;
+let previousPointerY = 0;
+
+let previousPointerTime = 0;
+
+let pointerSpeed = 0;
+
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
-const synth = new Tone.PolySynth(Tone.Synth).toDestination(); // can play several notes at once
+const reverb = new Tone.Reverb({
+  decay: 7,
+  wet: 0,
+}).toDestination();
+const synth = new Tone.PolySynth(Tone.Synth).connect(reverb); // can play several notes at once
 
 //plays the sounds in the cells (used in the pointerMove() function)
 function playCellSound(index) {
@@ -105,6 +120,11 @@ function update() {
     cellLightness[i] = cellLightness[i] + lightnessDifference * 0.3;
   }
 
+  pointerSpeed = pointerSpeed * 0.4;
+  //math.min because the wet value needs to be in between 0 and 1
+  let wetAmount = Math.min(pointerSpeed / 3500, 1);
+  reverb.wet.value = wetAmount;
+
   setTimeout(update, 20); // call update() again in 200 milliseconds
 }
 
@@ -133,8 +153,27 @@ function pointerDown(event) {
 
 function pointerMove(event) {
   //get position of the users pointer
-  let pointerX = event.clientX;
-  let pointerY = event.clientY;
+  pointerX = event.clientX;
+  pointerY = event.clientY;
+
+  //calculate elapsed time between last event trigger and now
+  let currentTime = event.timeStamp;
+  let elapsedTime = currentTime - previousPointerTime;
+
+  //calculate distance (positive value with square and square root) between current position and the position from last event trigger
+  let distanceX = pointerX - previousPointerX;
+  let distanceY = pointerY - previousPointerY;
+  let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+  //calculate pointerspeed
+  if (elapsedTime > 0 && previousPointerTime !== 0) {
+    pointerSpeed = (distance / elapsedTime) * 1000;
+  }
+
+  //set new values for the next event trigger
+  previousPointerX = pointerX;
+  previousPointerY = pointerY;
+  previousPointerTime = currentTime;
 
   const cellWidth = window.innerWidth / columns;
   let column = Math.floor(pointerX / cellWidth); //break position down to which COLUMN it's positioned, rather than the exact pixel coordinate
