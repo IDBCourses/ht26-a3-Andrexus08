@@ -26,15 +26,14 @@ import { createShape } from "./shape.js";
 // ---------- Settings ----------
 // Settings variables should contain all of the "fixed" parts of your programs
 // For example: which notes you can play, how fast things move, the tempo.
-const note = "C4"; // the note played when the pointer goes down
 const columns = 4;
 const rows = 3;
 
 const normalSaturation = 100;
 const normalLightness = 50;
 
-const hoverSaturation = 30;
-const hoverLightness = 35;
+const hoverSaturation = 40;
+const hoverLightness = 40;
 
 const notes = [
   "C4",
@@ -81,30 +80,47 @@ function playCellSound(index) {
 function cellVisuals(index) {
   if (activeCell !== -1) {
     //after going from one cell to another, reset the shapes colour
-    let previousShape = shapes[activeCell];
-    let previousHue = cellHue[activeCell];
-
-    previousShape.setColour(previousHue, normalSaturation, normalLightness);
+    targetSaturation[activeCell] = normalSaturation;
+    targetLightness[activeCell] = normalLightness;
   }
   //update the current cell in which the pointer is located
   activeCell = index;
   //change this cells colour for visual feedback
-  let currentShape = shapes[activeCell];
-  let currentHue = cellHue[activeCell];
-
-  currentShape.setColour(currentHue, hoverSaturation, hoverLightness);
+  targetSaturation[activeCell] = hoverSaturation;
+  targetLightness[activeCell] = hoverLightness;
 }
 
 // ---------- Update ----------
 // Update the state. This is called every 100ms.
 function update() {
-  setTimeout(update, 100); // call update() again in 100 milliseconds
+  // go through every cell
+  for (let i = 0; i < shapes.length; i++) {
+    let saturationDifference = targetSaturation[i] - cellSaturation[i];
+    let lightnessDifference = targetLightness[i] - cellLightness[i];
+
+    /*let's say targetSaturation is 30, cellSaturation is 100 --> difference = -70
+    in this equation down here, it would now slowly decrease the cellSaturation by adding -70*0.2
+    (same with lightness) */
+    cellSaturation[i] = cellSaturation[i] + saturationDifference * 0.3;
+    cellLightness[i] = cellLightness[i] + lightnessDifference * 0.3;
+  }
+
+  setTimeout(update, 20); // call update() again in 200 milliseconds
 }
 
 // ---------- Use ----------
 // Use the state to make sound and move shapes. This is called every 100ms.
 function use() {
-  setTimeout(use, 100); // call use() again in 100 milliseconds
+  //go through every cell
+  for (let i = 0; i < shapes.length; i++) {
+    let shape = shapes[i];
+    let hue = cellHue[i];
+
+    //implement the changes that get updated in update() and therefore creating a colour transition
+    shape.setColour(hue, cellSaturation[i], cellLightness[i]);
+  }
+
+  setTimeout(use, 20); // call use() again in 20 milliseconds
 }
 
 // ---------- Controls (Event Handlers) ----------
@@ -113,7 +129,6 @@ function pointerDown(event) {
   Tone.start(); // browsers only allow sound after the player has pressed something
 
   console.log("Pointer down at", event.clientX, event.clientY);
-  synth.triggerAttackRelease(note, "8n"); // play the note for an eighth note
 }
 
 function pointerMove(event) {
@@ -215,10 +230,8 @@ function resetActiveCell() {
     return;
   }
   //else reset the colour of the last touched shape
-  let shape = shapes[activeCell];
-  let hue = cellHue[activeCell];
-
-  shape.setColour(hue, normalSaturation, normalLightness);
+  targetSaturation[activeCell] = normalSaturation;
+  targetLightness[activeCell] = normalLightness;
 
   //reset all values
   activeCell = -1;
