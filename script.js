@@ -35,6 +35,7 @@ const normalLightness = 50;
 const hoverSaturation = 40;
 const hoverLightness = 40;
 
+// in case we want to use boring normal key notes again, but not needed
 const notes = [
   "C4",
   "D4",
@@ -88,20 +89,44 @@ let pointerSpeed = 0;
 
 let pointerLight;
 
+let isHolding = false;
+
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
 const reverb = new Tone.Reverb({
-  decay: 7,
+  decay: 9,
   wet: 0,
 }).toDestination();
-const synth = new Tone.PolySynth(Tone.Synth).connect(reverb); // can play several notes at once
-
+const synth = new Tone.PolySynth(Tone.Synth).connect(reverb); // if you want to use key notes instead of cool audio files go on
+const players = new Tone.Players({
+  sound1: "sounds/sound1.wav",
+  sound2: "sounds/sound2.wav",
+  sound3: "sounds/sound3.wav",
+  sound4: "sounds/sound4.mp3",
+  sound5: "sounds/sound5.wav",
+  sound6: "sounds/sound6.wav",
+  sound7: "sounds/sound7.wav",
+  sound8: "sounds/sound8.wav",
+  sound9: "sounds/sound9.wav",
+  sound10: "sounds/sound10.wav",
+  sound11: "sounds/sound11.wav",
+  sound12: "sounds/sound12.wav",
+  sound13: "sounds/sound13.mp3",
+  sound14: "sounds/sound14.mp3",
+  sound15: "sounds/sound15.mp3",
+  sound16: "sounds/sound16.mp3",
+  sound17: "sounds/sound17.mp3",
+  sound18: "sounds/sound18.mp3",
+  sound19: "sounds/sound19.mp3",
+  sound20: "sounds/sound20.mp3",
+  sound21: "sounds/sound21.mp3",
+}).connect(reverb);
 //plays the sounds in the cells (used in the pointerMove() function)
 function playCellSound(index) {
   //index is equal to the indeces used in shapes[]
-  const note = notes[index];
+  const soundName = `sound${index + 1}`;
 
-  synth.triggerAttackRelease(note, "8n");
+  players.player(soundName).start();
 }
 
 // ---------- Visuals ----------
@@ -164,8 +189,12 @@ function use() {
 // Runs every time the pointer goes down: a click, a tap or a pen touch.
 function pointerDown(event) {
   Tone.start(); // browsers only allow sound after the player has pressed something
-
+  isHolding = true;
   console.log("Pointer down at", event.clientX, event.clientY);
+}
+
+function pointerUp(event) {
+  isHolding = false;
 }
 
 function pointerMove(event) {
@@ -197,6 +226,10 @@ function pointerMove(event) {
 
   const cellHeight = window.innerHeight / rows;
   let row = Math.floor(pointerY / cellHeight); //break position down to which ROW it's, rather than the exact pixel coordinate
+
+  if (isHolding) {
+    return;
+  }
 
   //this if statement prevents that it repeats an input from the pointer if it stays in the same cell
   if (row !== activeRow || column !== activeColumn) {
@@ -325,6 +358,11 @@ function setup() {
   window.addEventListener("pointerdown", pointerDown);
   window.addEventListener("resize", resizeGrid);
   window.addEventListener("pointermove", pointerMove);
+  window.addEventListener("pointerup", pointerUp);
+  window.addEventListener("blur", pointerUp); //if I go outside the window and then release the click
+  document.addEventListener("dragstart", (event) => {
+    event.preventDefault(); //I had an issue with the pressing and holding cells after each other, the second cell I pressed, had this drag (cancel) symbol as my pointer from the browser, so this prevents this
+  });
   document.addEventListener("pointerout", resetActiveCell); //didn't work with window.addEventListener, so I used document.addEventListener | maybe it was the Opera Gx browser that had problems with it.
 }
 
