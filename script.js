@@ -26,7 +26,7 @@ import { createShape } from "./shape.js";
 // ---------- Settings ----------
 // Settings variables should contain all of the "fixed" parts of your programs
 // For example: which notes you can play, how fast things move, the tempo.
-const columns = 4;
+const columns = 7;
 const rows = 3;
 
 const normalSaturation = 100;
@@ -37,6 +37,17 @@ const hoverLightness = 40;
 
 const notes = [
   "C4",
+  "D4",
+  "E4",
+  "G4",
+  "A4",
+  "C4",
+  "D4",
+  "E5",
+  "G5",
+  "A4",
+  "A5",
+  "C5",
   "D4",
   "E4",
   "G4",
@@ -74,6 +85,8 @@ let previousPointerY = 0;
 let previousPointerTime = 0;
 
 let pointerSpeed = 0;
+
+let pointerLight;
 
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
@@ -124,6 +137,10 @@ function update() {
   //math.min because the wet value needs to be in between 0 and 1
   let wetAmount = Math.min(pointerSpeed / 3500, 1);
   reverb.wet.value = wetAmount;
+
+  //changes the size of the pointerLight depending on the pointerSpeed
+  let lightSize = 40 * wetAmount;
+  pointerLight.setSize(lightSize, lightSize);
 
   setTimeout(update, 20); // call update() again in 200 milliseconds
 }
@@ -192,6 +209,13 @@ function pointerMove(event) {
     cellVisuals(index);
     console.log("Row: " + row + " Column: " + column);
   }
+
+  //since the pointerLight shape is not centered on the pointer, we need to get the center of the shape by moving it back HALF its size
+  let lightSize = pointerLight.width; // can't use lightSize from the update() function
+  pointerLight.setPosition(
+    (event.clientX - lightSize / 2) / window.innerWidth,
+    (event.clientY - lightSize / 2) / window.innerHeight,
+  );
 }
 
 function buildGrid() {
@@ -218,7 +242,7 @@ function buildGrid() {
       //saves the current rectangle shape in an array, so we can easily edit certain shapes later on
       shapes.push(shape);
       //saves the colour (hues) of each created cell
-      cellHue.push(200 + column * 10 + row * 40);
+      cellHue.push(200 + column * 10 + row * 65);
       //saves the original saturation and lightness of each created cell
       cellSaturation.push(normalSaturation);
       cellLightness.push(normalLightness);
@@ -283,6 +307,15 @@ function resetActiveCell() {
 function setup() {
   buildGrid();
   resizeGrid();
+
+  //visuals for the pointerSpeed directly on the pointer
+  pointerLight = createShape();
+  pointerLight.element.style.pointerEvents = "none"; // so it doesn't trigger a cell by making the program think, it touched the pointerLight and then automatically triggering a cell again
+  pointerLight.setSize(5, 5);
+  pointerLight.setRoundedness(1);
+  pointerLight.setColour(70, 100, 50);
+  pointerLight.setPosition(0.5, 0.5);
+
   update(); // start the update loop
   use(); // start the use loop
 
