@@ -8,6 +8,9 @@
 
 This instrument is really similar to a launchpad, which features cells that produce sound which you can also shape with the pointerSpeed.
 
+## IMPORTANT
+**It can get really loud maybe, so maybe enter the Webpage with low volume**
+
 ## How to play
 
 <!-- Fill in the table with a row for everything the player can do with the pointer: clicking, moving slowly or fast, moving in circles, holding still... Say what happens to the sound and to the shapes. If you added keys, give them rows too. -->
