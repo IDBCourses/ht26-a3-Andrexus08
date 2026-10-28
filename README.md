@@ -1,21 +1,27 @@
 # My instrument
 
-**Play it here:** <!-- Paste your GitHub Pages link here, e.g. https://idbcourses.github.io/your-repo-name/ -->
+**Play it here:** [<!-- Paste your GitHub Pages link here, e.g. https://idbcourses.github.io/your-repo-name/ -->](https://github.com/IDBCourses/ht26-a3-Andrexus08)
 
-**Name:** <!-- Your name and MAU ID -->
+**Name:** <!-- Your name and MAU ID --> Fabian André Hevér as9717
 
 <!-- One or two sentences: what kind of instrument is it, and what is it like to play? -->
+
+This instrument is really similar to a launchpad, which features cells that produce sound which you can also shape with the pointerSpeed.
 
 ## How to play
 
 <!-- Fill in the table with a row for everything the player can do with the pointer: clicking, moving slowly or fast, moving in circles, holding still... Say what happens to the sound and to the shapes. If you added keys, give them rows too. -->
 
-| When you...  | The sound...                         | The shapes... |
-| ------------ | ------------------------------------ | ------------- |
-| Click or tap | Plays a C4 (the example: replace it) | Nothing yet   |
-|              |                                      |               |
+| When you...                                     | The sound...                                             | The shapes...                                                                                                                                                |
+| ----------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Hover over cell                                 | Plays one cell-specific sound effect                     | The shapes saturation and lightness decrease, creating a visual feedback                                                                                     |
+| Click and hold on a cell                        | Nothing happens to the sound                             | The cell you were hovering over when you first clicked get's locked while you are holding the left mouse click. No other cell can be triggered while holding |
+| Increase pointer speed (move mouse fast around) | a reverb effect increases depending on the pointer speed | a little yellow circle appears at the pointer which indicates the speed by its size                                                                          |
 
 <!-- Anything else a player needs to know: how to get started, a good thing to try first. -->
+
+**One funny thing to do:**
+When you lock one cell by clicking and holding down the left mouse button, you can drastically move your mouse and therefore increase the pointer speed so that there is a bigger reverb effect. It is better to do this while locking a cell, since you would not trigger other cells while drastically moving your mouse around.
 
 ---
 
