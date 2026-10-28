@@ -158,7 +158,7 @@ function update() {
     cellLightness[i] = cellLightness[i] + lightnessDifference * 0.3;
   }
 
-  pointerSpeed = pointerSpeed * 0.4;
+  pointerSpeed = pointerSpeed * 0.7;
   //math.min because the wet value needs to be in between 0 and 1
   let wetAmount = Math.min(pointerSpeed / 3500, 1);
   reverb.wet.value = wetAmount;

@@ -15,13 +15,15 @@ This instrument is really similar to a launchpad, which features cells that prod
 | When you...                                     | The sound...                                             | The shapes...                                                                                                                                                |
 | ----------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Hover over cell                                 | Plays one cell-specific sound effect                     | The shapes saturation and lightness decrease, creating a visual feedback                                                                                     |
-| Click and hold on a cell                        | Nothing happens to the sound                             | The cell you were hovering over when you first clicked get's locked while you are holding the left mouse click. No other cell can be triggered while holding |
+| Click and hold on a cell                        | Nothing happens to the sound                             | The cell you were hovering over when you first clicked get's locked while you are holding the left mouse click. No other cell can be triggered while holding. Additionally, the yellow circle mentioned at the next step also gets locked to the original click position |
 | Increase pointer speed (move mouse fast around) | a reverb effect increases depending on the pointer speed | a little yellow circle appears at the pointer which indicates the speed by its size                                                                          |
 
 <!-- Anything else a player needs to know: how to get started, a good thing to try first. -->
 
 **One funny thing to do:**
 When you lock one cell by clicking and holding down the left mouse button, you can drastically move your mouse and therefore increase the pointer speed so that there is a bigger reverb effect. It is better to do this while locking a cell, since you would not trigger other cells while drastically moving your mouse around.
+**Additional tip:**
+When you want to create a consistent reverb effect, try doing circle motions with your mouse, since this keeps a consistent speed. If you would just move your mouse from side to side, it would sound cut-off.
 
 ---
 
