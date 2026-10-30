@@ -91,6 +91,8 @@ let pointerLight;
 
 let isHolding = false;
 
+let index = [];
+
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
 const reverb = new Tone.Reverb({
@@ -99,7 +101,7 @@ const reverb = new Tone.Reverb({
 }).toDestination();
 const synth = new Tone.PolySynth(Tone.Synth).connect(reverb); // if you want to use key notes instead of cool audio files go on
 const players = new Tone.Players({
-  sound1: "sounds/sound1.wav",
+  sound1: "sounds/sound1.mp3",
   sound2: "sounds/sound2.wav",
   sound3: "sounds/sound3.wav",
   sound4: "sounds/sound4.mp3",
@@ -190,6 +192,7 @@ function use() {
 function pointerDown(event) {
   Tone.start(); // browsers only allow sound after the player has pressed something
   isHolding = true;
+  playCellSound(index);
   console.log("Pointer down at", event.clientX, event.clientY);
 }
 
@@ -236,7 +239,7 @@ function pointerMove(event) {
     activeRow = row;
     activeColumn = column;
 
-    let index = row * columns + column;
+    index = row * columns + column;
     //I use this index for the following functions, since it says in which cell I'm located
     playCellSound(index);
     cellVisuals(index);
@@ -271,7 +274,6 @@ function buildGrid() {
         normalSaturation,
         normalLightness,
       );
-
       //saves the current rectangle shape in an array, so we can easily edit certain shapes later on
       shapes.push(shape);
       //saves the colour (hues) of each created cell
